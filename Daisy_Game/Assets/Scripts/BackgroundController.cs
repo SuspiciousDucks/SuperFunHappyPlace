@@ -5,7 +5,7 @@ public class BackgroundController : MonoBehaviour
 {
 
     [SerializeField]
-    bool m_ScaleBackgroundSpriteBasedOnLandscapeOrPortraitCamera;
+    bool m_ScaleBackgroundSpriteBasedOnLandscapeOrPortraitCamera = false;
 
     //Called on constructions
     private void Awake()

@@ -6,7 +6,8 @@ using UnityEngine;
 public class CellItem
 {
     private Vector3 m_CellPosition;
-    public Gem m_Gem;
+
+    public GameObject m_CurrentObject;
 
     public Vector3 CellPosition
     {
@@ -19,7 +20,7 @@ public class CellItem
         Vector3 cellPosition = this.m_CellPosition;
         cellPosition.z = z;
 
-        //don't care for inefficiency this is just debugS
+        //don't care for inefficiency this is just debug
         Vector3 leftBottomOffset = extends * -0.5f;
         Vector3 rightTopOffset = extends * 0.5f;
         Vector3 leftTopOffset = new Vector3(leftBottomOffset.x, rightTopOffset.y, 0);

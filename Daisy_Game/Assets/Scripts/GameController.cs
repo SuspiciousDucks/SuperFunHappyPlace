@@ -72,7 +72,7 @@ public class GameController : MonoBehaviour
     CellItem GetCellToPlaceCounter(int originalCellId)
     {
         //TODO Do some math here to work out what cell we actually need to be working with.
-        //hint use m_GameGridComponent for help it has useful functions and ino.
+        //hint use m_GameGridComponent for help it has useful functions and info.
         int targetCell = originalCellId;
 
         return m_GameGridComponent.GetGridCell(targetCell);

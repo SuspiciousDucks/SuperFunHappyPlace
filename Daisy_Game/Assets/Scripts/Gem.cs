@@ -13,18 +13,10 @@ public class Gem : MonoBehaviour
 
     }
 
-    public void SetPlayerColour(bool player1turn)
+    public void SetPlayerColour(Color playerColor)
     {
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (player1turn)
-        {
-            spriteRenderer.color = Color.red;
-        }
-        else
-        {
-            spriteRenderer.color = Color.blue;
-        }
+        spriteRenderer.color = playerColor;
     }
 
     // Update is called once per frame
@@ -57,4 +49,4 @@ public class Gem : MonoBehaviour
         //    spriteRenderer.color = Color.blue;
         //}
     }
-}                       
+}

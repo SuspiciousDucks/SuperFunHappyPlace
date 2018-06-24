@@ -40,9 +40,9 @@ public class GameGrid : MonoBehaviour
     bool CenterGrid = true;
 
     [SerializeField]
-    float MaximumWidth = 600.0f;
+    float MaximumWidth = 10.0f;
     [SerializeField]
-    float MaximumHeight = 600.0f;
+    float MaximumHeight = 10.0f;
 
     [SerializeField]
     int CellCountX = 12;
@@ -76,7 +76,19 @@ public class GameGrid : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        //Drive the main camera to fit the content into the screen.
+        float screenRatio = (float)Screen.width / (float)Screen.height;
+        float targetRatio = MaximumWidth / MaximumHeight;
 
+        if (screenRatio >= targetRatio)
+        {
+            Camera.main.orthographicSize = MaximumHeight / 2;
+        }
+        else
+        {
+            float differenceInSize = targetRatio / screenRatio;
+            Camera.main.orthographicSize = MaximumHeight / 2 * differenceInSize;
+        }
     }
 
     // Update is called once per frame
@@ -127,6 +139,8 @@ public class GameGrid : MonoBehaviour
     public CellItem GetGridCell(int x, int y)
     {
         int index = CellCooridnatesToIndex(x, y);
+
+        Debug.LogFormat("Get Grid Cell {0} , {1}", x, y);
         return m_Cells[index];
     }
 

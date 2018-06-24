@@ -155,10 +155,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CenterGrid: 1
-  MaximumWidth: 18
-  MaximumHeight: 18
-  CellCountX: 9
-  CellCountY: 9
+  MaximumWidth: 14
+  MaximumHeight: 14
+  CellCountX: 7
+  CellCountY: 6
 --- !u!1 &499577195
 GameObject:
   m_ObjectHideFlags: 0

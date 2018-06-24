@@ -5,9 +5,10 @@ using UnityEngine;
 //A wrapper class that holds information about a cell.
 public class CellItem
 {
-    private Vector2 m_CellPosition;
+    private Vector3 m_CellPosition;
+   public Gem m_Gem;
 
-    public Vector2 CellPosition
+    public Vector3  CellPosition
     {
         get { return m_CellPosition; }
         set { m_CellPosition = value; }
@@ -18,7 +19,7 @@ public class CellItem
         Vector3 cellPosition = this.m_CellPosition;
         cellPosition.z = z;
 
-        //don't care for inefficiency this is just debug
+        //don't care for inefficiency this is just debugS
         Vector3 leftBottomOffset = extends * -0.5f;
         Vector3 rightTopOffset = extends * 0.5f;
         Vector3 leftTopOffset = new Vector3(leftBottomOffset.x, rightTopOffset.y, 0);
@@ -105,7 +106,7 @@ public class GameGrid : MonoBehaviour
                 Vector3 cellCenterPoint = new Vector2((float)xPosition, (float)yPosition);
                 //Debug.LogFormat("New Positions {0} , {1}", cellCenterPoint.x, cellCenterPoint.y);
 
-                cellCenterPoint += this.transform.localPosition;
+                cellCenterPoint += this.transform.position;
                 int index = CellCooridnatesToIndex(x, y);
                 m_Cells[index].CellPosition = cellCenterPoint;
             }
@@ -122,4 +123,26 @@ public class GameGrid : MonoBehaviour
         int index = CellCooridnatesToIndex(x, y);
         return m_Cells[index].CellPosition;
     }
+    
+    public CellItem GetGridCell(int x, int y)
+    {
+        int index = CellCooridnatesToIndex(x, y);
+        return m_Cells[index];
+    }
+
+
+    public int GetRowCount()
+    {
+        return CellCountX;
+
+    }
+
+
+    public int GetColCount()
+    {
+        return CellCountY;
+    }
+
+     
 }
+

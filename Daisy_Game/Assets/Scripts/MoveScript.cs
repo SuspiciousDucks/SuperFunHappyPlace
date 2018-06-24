@@ -8,6 +8,8 @@ public class MoveScript : MonoBehaviour
     private Vector3 m_OriginalTransformLocation;
 
     private Vector2 m_LastMousePosition;
+    [SerializeField]
+    bool enablemovement = false;
 
     [SerializeField]
     float m_MaximumDisplacement = 100.0f;
@@ -28,16 +30,19 @@ public class MoveScript : MonoBehaviour
 
     private void OnMouseDrag()
     {
-        MoveWithCursor();
-
-        //Evaluates if we have moved the cursor far enough away from the start location that we should 
-        if (ShouldSnapToTarget())
+        if (enablemovement)
         {
-            Vector3 targetPosition = GetTargetLocation();
-            SnapToPosition(targetPosition);
-        }
+            MoveWithCursor();
 
-        m_LastMousePosition = Input.mousePosition;
+            //Evaluates if we have moved the cursor far enough away from the start location that we should 
+            if (ShouldSnapToTarget())
+            {
+                Vector3 targetPosition = GetTargetLocation();
+                SnapToPosition(targetPosition);
+            }
+
+            m_LastMousePosition = Input.mousePosition;
+        }
     }
 
     Vector3 GetTargetLocation()
@@ -65,19 +70,27 @@ public class MoveScript : MonoBehaviour
 
     void OnMouseDown()
     {
-        //Store the initial start location
-        LogInitialState();
+        if (enablemovement)
+        {
+            //Store the initial start location
+            LogInitialState();
 
-        m_LastMousePosition = Input.mousePosition;
+
+            m_LastMousePosition = Input.mousePosition;
+        }
     }
 
     private void OnMouseUp()
+
     {
-        //reset if we are not at the desired location
-        if (this.transform.localPosition != m_OriginalTransformLocation)
+        if (enablemovement)
         {
-            //Release the trigger
-            ResetPosition();
+            //reset if we are not at the desired location
+            if (this.transform.localPosition != m_OriginalTransformLocation)
+            {
+                //Release the trigger
+                ResetPosition();
+            }
         }
     }
 

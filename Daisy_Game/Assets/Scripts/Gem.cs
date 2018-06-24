@@ -2,27 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gem : MonoBehaviour {
+public class Gem : MonoBehaviour
+{
 
-	// Use this for initialization
-	void Start ()
+    float moveSpeed = 3.0f;
+    // Use this for initialization
+    void Start()
     {
-		
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-		
-	}
+    
 
+    }
 
-
-    void OnMouseDown()
+    public void SetPlayerColour(bool player1turn)
     {
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        
-        if(spriteRenderer.color == Color.blue)
+
+        if (player1turn)
         {
             spriteRenderer.color = Color.red;
         }
@@ -30,6 +25,29 @@ public class Gem : MonoBehaviour {
         {
             spriteRenderer.color = Color.blue;
         }
-       
     }
-}   
+
+    // Update is called once per frame
+    void Update()
+    {
+       // transform.Translate(Vector3.right * Time.deltaTime * Input.GetAxis("Horizontal") * moveSpeed);
+
+    }
+
+
+
+  void OnMouseDown()
+    {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer.color == Color.blue)
+        {
+            spriteRenderer.color = Color.red;
+        }
+        else
+        {
+            spriteRenderer.color = Color.blue;
+        }
+
+    }
+}                       

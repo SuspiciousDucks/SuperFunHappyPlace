@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Gem : MonoBehaviour
 {
-
+    int id;
+    GameController objectToNotify;
     float moveSpeed = 3.0f;
     // Use this for initialization
     void Start()
@@ -29,25 +30,38 @@ public class Gem : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-       // transform.Translate(Vector3.right * Time.deltaTime * Input.GetAxis("Horizontal") * moveSpeed);
 
+    {
+
+        // transform.Translate(Vector3.right * Time.deltaTime * Input.GetAxis("Horizontal") * moveSpeed);
+     
+    }
+    public void Register(int index, GameController controller)
+    {
+        id = index;
+        objectToNotify = controller;
     }
 
 
-
-  void OnMouseDown()
+    void OnMouseDown()
     {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-
-        if (spriteRenderer.color == Color.blue)
+        if (objectToNotify)
         {
-            spriteRenderer.color = Color.red;
-        }
-        else
-        {
-            spriteRenderer.color = Color.blue;
-        }
+            objectToNotify.ItemSelected(id);
 
+
+        }
+        //{
+        //    SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
+        //    if (spriteRenderer.color == Color.blue)
+        //    {
+        //        spriteRenderer.color = Color.red;
+        //    }
+        //    else
+        //    {
+        //      spriteRenderer.color = Color.blue;
     }
+
+    
 }                       

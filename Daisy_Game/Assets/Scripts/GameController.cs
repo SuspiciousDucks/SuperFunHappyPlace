@@ -18,12 +18,13 @@ public class GameController : MonoBehaviour
         {
             GameGrid gameGridComponent = GameGridObject.GetComponent<GameGrid>();
             
-            for(int x = 0; x < gameGridComponent.GetRowCount();++x )                                        //For loop that goes round the number of rows are in the game grid
+            for(int x = 0; x < gameGridComponent.GetRowCount();++x)                                        //For loop that goes round the number of rows are in the game grid
             {
-                for(int y = 0; y < gameGridComponent.GetColCount();++x)
+                for(int y = 0; y < gameGridComponent.GetColCount();++y)
                 {
                     CellItem cellItem = gameGridComponent.GetGridCell(x, y);
-                    cellItem.m_Gem = CreateGem(cellItem.CellPosition);
+                    int index = gameGridComponent.CellCooridnatesToIndex(x, y);
+                    cellItem.m_Gem = CreateGem(cellItem.CellPosition, index);
                     
 
                     
@@ -45,9 +46,20 @@ public class GameController : MonoBehaviour
 
     }
 
-    Gem CreateGem(Vector3 location)
+    Gem CreateGem(Vector3 location,int index)
     {
         GameObject gemObject = GameObject.Instantiate(GemPrefab, location, Quaternion.identity);
-        return gemObject.GetComponent<Gem>();
+       Gem gem = gameObject.GetComponent("Gem")as Gem;
+       // gem.Register(index, this);
+        return gem;
+    }
+
+    public void ItemSelected(int id)
+    {
+        GameGrid gameGridComponent = GameGridObject.GetComponent<GameGrid>();
+        CellItem cellItem = gameGridComponent.GetGridCell(id);
+        cellItem.m_Gem.SetPlayerColour(true);
+
+
     }
 }

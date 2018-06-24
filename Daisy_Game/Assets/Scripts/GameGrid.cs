@@ -6,9 +6,9 @@ using UnityEngine;
 public class CellItem
 {
     private Vector3 m_CellPosition;
-   public Gem m_Gem;
+    public Gem m_Gem;
 
-    public Vector3  CellPosition
+    public Vector3 CellPosition
     {
         get { return m_CellPosition; }
         set { m_CellPosition = value; }
@@ -56,7 +56,7 @@ public class GameGrid : MonoBehaviour
 
     void Awake()
     {
-        if(CenterGrid)
+        if (CenterGrid)
         {
             this.transform.position -= new Vector3(MaximumWidth * 0.5f, MaximumHeight * 0.5f, 0);
         }
@@ -96,7 +96,7 @@ public class GameGrid : MonoBehaviour
     void CalculateCells()
     {
         //ensure it is empty before we create the cells.
-        for(int x = 0; x < CellCountX; ++x)
+        for (int x = 0; x < CellCountX; ++x)
         {
             for (int y = 0; y < CellCountY; ++y)
             {
@@ -113,7 +113,7 @@ public class GameGrid : MonoBehaviour
         }
     }
 
-    int CellCooridnatesToIndex(int x, int y)
+    public int CellCooridnatesToIndex(int x, int y)
     {
         return x + (CellCountX * y);
     }
@@ -123,7 +123,7 @@ public class GameGrid : MonoBehaviour
         int index = CellCooridnatesToIndex(x, y);
         return m_Cells[index].CellPosition;
     }
-    
+
     public CellItem GetGridCell(int x, int y)
     {
         int index = CellCooridnatesToIndex(x, y);
@@ -143,6 +143,11 @@ public class GameGrid : MonoBehaviour
         return CellCountY;
     }
 
-     
+    public CellItem GetGridCell(int index)
+    {
+        return m_Cells[index];
+
+
+    }
 }
 

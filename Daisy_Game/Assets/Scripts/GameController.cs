@@ -11,6 +11,8 @@ public class GameController : MonoBehaviour
 
     GameGrid m_GameGridComponent;
     Assets.Scripts.PlayerManager m_PlayerManager;
+    bool isGameOver;
+
 
     private void Awake()
     {
@@ -19,6 +21,7 @@ public class GameController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        isGameOver = false;
         if (GameGridObject != null)
         {
             m_GameGridComponent = GameGridObject.GetComponent<GameGrid>();
@@ -61,9 +64,9 @@ public class GameController : MonoBehaviour
     public void ItemSelected(int id)
     {
         CellItem cellItem = GetCellToPlaceCounter(id);
-        if (cellItem != null)
+        if (cellItem != null && !isGameOver)
         {
-            ProcessPlayerMove(cellItem);
+            ProcessPlayerMove(cellItem , id);
             EvaluateGameState();
             EndTurn();
         }
@@ -78,20 +81,93 @@ public class GameController : MonoBehaviour
         return m_GameGridComponent.GetGridCell(targetCell);
     }
 
-    void ProcessPlayerMove(CellItem cellItem)
+    void ProcessPlayerMove(CellItem cellItem , int Index)
     {
-        Color teamColor = m_PlayerManager.GetActivePlayersTurn().PlayerColor;
-        Gem selectedItemGem = cellItem.m_CurrentObject.GetComponent<Gem>();
-        selectedItemGem.SetPlayerColour(teamColor);
-    }
+        int column = cellItem.CellColumn;
+        int columnheight = m_GameGridComponent.GetColCount();
 
+        for (int i = 0; i < columnheight; i++)
+        {
+
+          CellItem FoundCell =  m_GameGridComponent.GetGridCell(column, i);
+     
+                       
+            Gem selectedItemGem = FoundCell.m_CurrentObject.GetComponent<Gem>();
+           
+            if (!selectedItemGem.IsGemOwned())
+            {
+                Color teamColor = m_PlayerManager.GetActivePlayersTurn().PlayerColor;
+                int teamInt = m_PlayerManager.GetActivePlayersTurn().PlayerId;
+                selectedItemGem.SetPlayerColour(teamColor);
+                selectedItemGem.SetPlayerOwner(teamInt);
+
+                break;
+
+            }
+        }
+      
+    }
+    Gem GetCellGem(CellItem item)
+    {
+        return item.m_CurrentObject.GetComponent<Gem>();
+
+    }
     void EvaluateGameState()
     {
-        //TODO
+        int rowlength = m_GameGridComponent.GetRowCount();
+        for (int i = 0; i < rowlength ; i++)
+        {
+            if (m_GameGridComponent.IsRowComplete(i, 1, 4))
+            {
+                GameOver();
+                return;
+            }
+            if (m_GameGridComponent.IsRowComplete(i, 2, 4))
+            {
+                GameOver();
+                return;
+            }
+        }
+
+
+        int collength = m_GameGridComponent.GetColCount();
+        for (int i = 0; i < collength ; i++)
+        {
+            if (m_GameGridComponent.IsColComplete(i, 1, 4))
+            {
+                GameOver();
+                return;
+            }
+            if (m_GameGridComponent.IsColComplete(i, 2, 4))
+            {
+                GameOver();
+                return;
+            }
+
+        }
     }
 
     void EndTurn()
     {
         m_PlayerManager.SwapTurn();
+    }
+    void GameOver()
+    {
+        isGameOver = true;
+        //anything else that needs to happen on gameover
+
+    }
+    void RestartGame()
+    {
+        for (int x = 0; x < m_GameGridComponent.GetRowCount(); ++x)                                        
+        {
+            for (int y = 0; y < m_GameGridComponent.GetColCount(); ++y)
+            {
+                CellItem cellItem = m_GameGridComponent.GetGridCell(x, y);
+                GetCellGem(cellItem).Restart();
+
+            }
+        }
+        isGameOver = false;
     }
 }

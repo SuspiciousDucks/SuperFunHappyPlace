@@ -6,6 +6,8 @@ using UnityEngine;
 public class CellItem
 {
     private Vector3 m_CellPosition;
+    private int m_Column;
+
 
     public GameObject m_CurrentObject;
 
@@ -15,6 +17,17 @@ public class CellItem
         set { m_CellPosition = value; }
     }
 
+    public int CellColumn
+    {
+        get
+        {
+            return m_Column;
+        }
+        set
+        {
+            m_Column = value;
+        }
+    }
     public void DebugDrawCell(Vector2 extends, float z)
     {
         Vector3 cellPosition = this.m_CellPosition;
@@ -122,6 +135,8 @@ public class GameGrid : MonoBehaviour
                 cellCenterPoint += this.transform.position;
                 int index = CellCooridnatesToIndex(x, y);
                 m_Cells[index].CellPosition = cellCenterPoint;
+                m_Cells[index].CellColumn = x;
+
             }
         }
     }
@@ -129,6 +144,15 @@ public class GameGrid : MonoBehaviour
     public int CellCooridnatesToIndex(int x, int y)
     {
         return x + (CellCountX * y);
+    }
+
+    public int IndexToColumn(int Index)
+    {
+        int Remainder = (Index - 1) % CellCountX;
+        return Remainder - 1;
+        // TODO check this function
+
+
     }
 
     public Vector2 GetGridPosition(int x, int y)
@@ -161,6 +185,53 @@ public class GameGrid : MonoBehaviour
     public CellItem GetGridCell(int index)
     {
         return m_Cells[index];
+
+
+    }
+
+    public bool IsRowComplete(int row, int playerid, int consecutiveCount)
+    {
+        int foundPlayeridCount = 0;
+        int colLength = GetColCount();
+        for (int i = 0; i < colLength; i++)
+        {
+            Gem gem = GetGridCell(row, i).m_CurrentObject.GetComponent<Gem>();
+            if (gem.GetPlayerId() == playerid)
+            {
+                foundPlayeridCount++;
+                
+            }
+            else if(foundPlayeridCount < consecutiveCount)
+            {
+                foundPlayeridCount = 0;
+
+            }
+        }
+        return foundPlayeridCount >= consecutiveCount;
+
+
+
+    }
+    public bool IsColComplete(int col, int playerid, int consecutiveCount)
+    {
+        int foundPlayeridCount = 0;
+        int rowLength = GetRowCount();
+        for (int i = 0; i < rowLength; i++)
+        {
+            Gem gem = GetGridCell(i, col).m_CurrentObject.GetComponent<Gem>();
+            if (gem.GetPlayerId() == playerid)
+            {
+                foundPlayeridCount++;
+
+            }
+            else if (foundPlayeridCount < consecutiveCount)
+            {
+                foundPlayeridCount = 0;
+
+            }
+        }
+        return foundPlayeridCount >= consecutiveCount;
+
 
 
     }

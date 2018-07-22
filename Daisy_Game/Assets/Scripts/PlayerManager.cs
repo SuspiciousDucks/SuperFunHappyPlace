@@ -22,11 +22,13 @@ namespace Assets.Scripts
             player1.name = "Player 1";
             player1.PlayerColor = Color.red;
             player1.Score = 0;
+            player1.PlayerId = 1;
 
             player2 = new PlayerScriptableData();
             player2.name = "Player 2";
             player2.PlayerColor = Color.blue;
             player2.Score = 0;
+            player2.PlayerId = 2;
         }
 
         public PlayerScriptableData GetActivePlayersTurn()

@@ -9,4 +9,5 @@ public class PlayerScriptableData : ScriptableObject
     public string PlayerName;
 
     public int Score;
+    public int PlayerId;
 }

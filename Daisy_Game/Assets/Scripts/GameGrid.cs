@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 //A wrapper class that holds information about a cell.
 public class CellItem
@@ -60,6 +61,16 @@ public class CellItem
         Debug.DrawLine(cellPosition + righBottomOffset, cellPosition + leftBottomOffset, Color.black, 0, false);
     }
 }
+
+//namespace
+public enum Corners
+{
+    TL,
+    TR,
+    BL,
+    BR
+}
+
 
 public class GameGrid : MonoBehaviour
 {
@@ -247,6 +258,108 @@ public class GameGrid : MonoBehaviour
             }
         }
         return foundPlayeridCount >= consecutiveCount;
+    }
+
+    public bool IsDiagonalComplete_Internal(CellItem startIndex, CellItem endIndex, int playerid, int consecutiveCount)
+    {
+        //ensure diagonal
+        if (Debug.isDebugBuild)
+        {
+            UnityEngine.Assertions.Assert.AreNotEqual(startIndex.CellColumn, endIndex.CellColumn);
+            UnityEngine.Assertions.Assert.AreNotEqual(startIndex.CellRow, endIndex.CellRow);
+        }
+
+        //pick increment direction and starting values
+        CellItem leftMostIndex = null;
+        CellItem rightMostIndex = null;
+        if (startIndex.CellColumn < endIndex.CellColumn)
+        {
+            leftMostIndex = startIndex;
+            rightMostIndex = endIndex;
+        }
+        else
+        {
+            leftMostIndex = endIndex;
+            rightMostIndex = startIndex;
+        }
+        int persistentColIncrement = leftMostIndex.CellRow; // current Y location moving through iterations
+        int gridIncrement = leftMostIndex.CellRow < rightMostIndex.CellRow ? 1 : -1;
+
+        int foundPlayeridCount = 0;
+
+        //moves through the effected columns
+        for (int i = startIndex.CellColumn; i != endIndex.CellColumn; ++i)
+        {
+            //X is the column we are investigating
+            Gem gem = GetGridCell(i, persistentColIncrement).m_CurrentObject.GetComponent<Gem>();
+            if (gem.GetPlayerId() == playerid)
+            {
+                foundPlayeridCount++;
+
+            }
+            else if (foundPlayeridCount < consecutiveCount)
+            {
+                foundPlayeridCount = 0;
+            }
+
+            persistentColIncrement += gridIncrement;
+        }
+
+        return foundPlayeridCount >= consecutiveCount;
+    }
+
+    public int CellsBetweenPoints(CellItem a, CellItem b, bool inclusive)
+    {
+        int plusSelfs = inclusive ? 2 : 0;
+        return System.Math.Abs(a.CellColumn - b.CellColumn) + plusSelfs;
+    }
+
+    public CellItem GetCellForCorner(CellItem initialPoint, Corners corner)
+    {
+        //inverse because we iterate to the other ends
+        int xIncrmenet = corner == Corners.BL || corner == Corners.TL ? -1 : 1;
+        int yIncrmenet = corner == Corners.BL || corner == Corners.BR ? -1 : 1;
+
+        CellItem foundCell = initialPoint;
+        int nextIterationX = foundCell.CellColumn + xIncrmenet;
+        int nextIterationY = foundCell.CellRow + yIncrmenet;
+
+        //Check still in array bounds
+        while (nextIterationX >= 0 && nextIterationX < GetRowLength()
+               && nextIterationY >= 0 && nextIterationY < GetColLength())
+        {
+            //iterate the item
+            foundCell = GetGridCell(nextIterationX, nextIterationY);
+
+            nextIterationX = foundCell.CellColumn + xIncrmenet;
+            nextIterationY = foundCell.CellRow + yIncrmenet;
+        }
+        return foundCell;
+    }
+
+    public bool IsDiagonalComplete(CellItem selectedIndex, int playerId, int consecutiveCount)
+    {
+        CellItem topLeft = GetCellForCorner(selectedIndex, Corners.TL);
+        CellItem bottomRight = GetCellForCorner(selectedIndex, Corners.BR); ;
+        if (CellsBetweenPoints(topLeft, bottomRight, true) >= consecutiveCount)
+        {
+            if (IsDiagonalComplete_Internal(topLeft, bottomRight, playerId, consecutiveCount))
+            {
+                return true;
+            }
+        }
+
+        CellItem bottomLeft = GetCellForCorner(selectedIndex, Corners.BL);
+        CellItem topRight = GetCellForCorner(selectedIndex, Corners.TR);
+        if (CellsBetweenPoints(bottomLeft, topRight, true) >= consecutiveCount)
+        {
+            if (IsDiagonalComplete_Internal(bottomLeft, topRight, playerId, consecutiveCount))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

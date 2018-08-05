@@ -126,6 +126,12 @@ public class GameController : MonoBehaviour
             GameOver();
             return;
         }
+
+        if (m_GameGridComponent.IsDiagonalComplete(item, m_PlayerManager.GetActivePlayersTurn().PlayerId, 4))
+        {
+            GameOver();
+            return;
+        }
     }
 
     void EndTurn()

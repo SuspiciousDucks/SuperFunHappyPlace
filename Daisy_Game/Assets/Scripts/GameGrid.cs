@@ -7,7 +7,7 @@ public class CellItem
 {
     private Vector3 m_CellPosition;
     private int m_Column;
-
+    private int m_Row;
 
     public GameObject m_CurrentObject;
 
@@ -28,6 +28,19 @@ public class CellItem
             m_Column = value;
         }
     }
+
+    public int CellRow
+    {
+        get
+        {
+            return m_Row;
+        }
+        set
+        {
+            m_Row = value;
+        }
+    }
+
     public void DebugDrawCell(Vector2 extends, float z)
     {
         Vector3 cellPosition = this.m_CellPosition;
@@ -136,7 +149,7 @@ public class GameGrid : MonoBehaviour
                 int index = CellCooridnatesToIndex(x, y);
                 m_Cells[index].CellPosition = cellCenterPoint;
                 m_Cells[index].CellColumn = x;
-
+                m_Cells[index].CellRow = y;
             }
         }
     }
@@ -165,19 +178,24 @@ public class GameGrid : MonoBehaviour
     {
         int index = CellCooridnatesToIndex(x, y);
 
-        Debug.LogFormat("Get Grid Cell {0} , {1}", x, y);
+        Debug.LogFormat("Get Grid Cell {0},{1} at index {2}", x, y, index);
         return m_Cells[index];
     }
 
-
-    public int GetRowCount()
+    public int GetRowLength()
     {
         return CellCountX;
-
+    }
+    public int GetColCount()
+    {
+        return CellCountX;
     }
 
-
-    public int GetColCount()
+    public int GetColLength()
+    {
+        return CellCountY;
+    }
+    public int GetRowCount()
     {
         return CellCountY;
     }
@@ -185,17 +203,16 @@ public class GameGrid : MonoBehaviour
     public CellItem GetGridCell(int index)
     {
         return m_Cells[index];
-
-
     }
 
     public bool IsRowComplete(int row, int playerid, int consecutiveCount)
     {
         int foundPlayeridCount = 0;
-        int colLength = GetColCount();
-        for (int i = 0; i < colLength; i++)
+        int numberOfColumns = GetColCount();
+        for (int i = 0; i < numberOfColumns; i++)
         {
-            Gem gem = GetGridCell(row, i).m_CurrentObject.GetComponent<Gem>();
+            //Y is the row we are investigating
+            Gem gem = GetGridCell(i, row).m_CurrentObject.GetComponent<Gem>();
             if (gem.GetPlayerId() == playerid)
             {
                 foundPlayeridCount++;
@@ -208,17 +225,16 @@ public class GameGrid : MonoBehaviour
             }
         }
         return foundPlayeridCount >= consecutiveCount;
-
-
-
     }
+
     public bool IsColComplete(int col, int playerid, int consecutiveCount)
     {
         int foundPlayeridCount = 0;
-        int rowLength = GetRowCount();
-        for (int i = 0; i < rowLength; i++)
+        int numberOfRows = GetRowCount();
+        for (int i = 0; i < numberOfRows; i++)
         {
-            Gem gem = GetGridCell(i, col).m_CurrentObject.GetComponent<Gem>();
+            //X is the column we are investigating
+            Gem gem = GetGridCell(col, i).m_CurrentObject.GetComponent<Gem>();
             if (gem.GetPlayerId() == playerid)
             {
                 foundPlayeridCount++;
@@ -231,9 +247,6 @@ public class GameGrid : MonoBehaviour
             }
         }
         return foundPlayeridCount >= consecutiveCount;
-
-
-
     }
 }
 

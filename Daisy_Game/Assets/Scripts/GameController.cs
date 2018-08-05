@@ -26,9 +26,9 @@ public class GameController : MonoBehaviour
         {
             m_GameGridComponent = GameGridObject.GetComponent<GameGrid>();
 
-            for (int x = 0; x < m_GameGridComponent.GetRowCount(); ++x)                                        //For loop that goes round the number of rows are in the game grid
+            for (int x = 0; x < m_GameGridComponent.GetRowLength(); ++x)                                        //For loop that goes round the number of rows are in the game grid
             {
-                for (int y = 0; y < m_GameGridComponent.GetColCount(); ++y)
+                for (int y = 0; y < m_GameGridComponent.GetColLength(); ++y)
                 {
                     CellItem cellItem = m_GameGridComponent.GetGridCell(x, y);
                     cellItem.m_CurrentObject = CreateGemObject(cellItem.CellPosition);
@@ -44,9 +44,9 @@ public class GameController : MonoBehaviour
     {
         yield return new WaitForSeconds(0.1f);
 
-        for (int x = 0; x < m_GameGridComponent.GetRowCount(); ++x)
+        for (int x = 0; x < m_GameGridComponent.GetRowLength(); ++x)
         {
-            for (int y = 0; y < m_GameGridComponent.GetColCount(); ++y)
+            for (int y = 0; y < m_GameGridComponent.GetColLength(); ++y)
             {
                 CellItem cellItem = m_GameGridComponent.GetGridCell(x, y);
                 int index = m_GameGridComponent.CellCooridnatesToIndex(x, y);
@@ -63,12 +63,15 @@ public class GameController : MonoBehaviour
 
     public void ItemSelected(int id)
     {
-        CellItem cellItem = GetCellToPlaceCounter(id);
-        if (cellItem != null && !isGameOver)
+        CellItem clickSelectedCell = GetCellToPlaceCounter(id);
+        if (clickSelectedCell != null && !isGameOver)
         {
-            ProcessPlayerMove(cellItem , id);
-            EvaluateGameState();
-            EndTurn();
+            CellItem changedCell = ProcessPlayerMove(clickSelectedCell, id);
+            if (changedCell != null)
+            {
+                EvaluateGameState(changedCell);
+                EndTurn();
+            }
         }
     }
 
@@ -81,69 +84,47 @@ public class GameController : MonoBehaviour
         return m_GameGridComponent.GetGridCell(targetCell);
     }
 
-    void ProcessPlayerMove(CellItem cellItem , int Index)
+    //Returns the found cell item from processing players move
+    CellItem ProcessPlayerMove(CellItem cellItem , int Index)
     {
         int column = cellItem.CellColumn;
-        int columnheight = m_GameGridComponent.GetColCount();
+        int columnheight = m_GameGridComponent.GetColLength();
 
         for (int i = 0; i < columnheight; i++)
         {
-
-          CellItem FoundCell =  m_GameGridComponent.GetGridCell(column, i);
-     
-                       
+            CellItem FoundCell = m_GameGridComponent.GetGridCell(column, i);
             Gem selectedItemGem = FoundCell.m_CurrentObject.GetComponent<Gem>();
-           
+
             if (!selectedItemGem.IsGemOwned())
             {
                 Color teamColor = m_PlayerManager.GetActivePlayersTurn().PlayerColor;
                 int teamInt = m_PlayerManager.GetActivePlayersTurn().PlayerId;
                 selectedItemGem.SetPlayerColour(teamColor);
                 selectedItemGem.SetPlayerOwner(teamInt);
-
-                break;
-
+                return FoundCell;
             }
         }
-      
+
+        //failed to do move
+        return null;
     }
     Gem GetCellGem(CellItem item)
     {
         return item.m_CurrentObject.GetComponent<Gem>();
 
     }
-    void EvaluateGameState()
+    void EvaluateGameState(CellItem item)
     {
-        int rowlength = m_GameGridComponent.GetRowCount();
-        for (int i = 0; i < rowlength ; i++)
+        if (m_GameGridComponent.IsRowComplete(item.CellRow, m_PlayerManager.GetActivePlayersTurn().PlayerId, 4))
         {
-            if (m_GameGridComponent.IsRowComplete(i, 1, 4))
-            {
-                GameOver();
-                return;
-            }
-            if (m_GameGridComponent.IsRowComplete(i, 2, 4))
-            {
-                GameOver();
-                return;
-            }
+            GameOver();
+            return;
         }
 
-
-        int collength = m_GameGridComponent.GetColCount();
-        for (int i = 0; i < collength ; i++)
+        if (m_GameGridComponent.IsColComplete(item.CellColumn, m_PlayerManager.GetActivePlayersTurn().PlayerId, 4))
         {
-            if (m_GameGridComponent.IsColComplete(i, 1, 4))
-            {
-                GameOver();
-                return;
-            }
-            if (m_GameGridComponent.IsColComplete(i, 2, 4))
-            {
-                GameOver();
-                return;
-            }
-
+            GameOver();
+            return;
         }
     }
 
@@ -156,12 +137,13 @@ public class GameController : MonoBehaviour
         isGameOver = true;
         //anything else that needs to happen on gameover
 
+        Debug.LogFormat("Game Over");
     }
     void RestartGame()
     {
-        for (int x = 0; x < m_GameGridComponent.GetRowCount(); ++x)                                        
+        for (int x = 0; x < m_GameGridComponent.GetRowLength(); ++x)                                        
         {
-            for (int y = 0; y < m_GameGridComponent.GetColCount(); ++y)
+            for (int y = 0; y < m_GameGridComponent.GetColLength(); ++y)
             {
                 CellItem cellItem = m_GameGridComponent.GetGridCell(x, y);
                 GetCellGem(cellItem).Restart();
